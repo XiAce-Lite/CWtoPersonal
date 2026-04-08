@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CW to Personal Options</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .card {
+      max-width: 760px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 8px;
+    }
+    p {
+      line-height: 1.6;
+    }
+    label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: 600;
+    }
+    input[type="url"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 16px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    #status {
+      margin-top: 12px;
+      min-height: 20px;
+      font-size: 13px;
+    }
+    .hint {
+      color: #475569;
+      font-size: 13px;
+    }
+    code {
+      background: #eff6ff;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>CW → Personal 設定</h1>
+    <p>
+      ChordWiki の曲ページで <code>CW → Personal</code> ボタンを押したときに、
+      新規タブで開く <code>chordwiki_personal</code> のトップページURLを設定します。
+    </p>
+
+    <label for="personalTopUrl">personalTopUrl</label>
+    <input
+      id="personalTopUrl"
+      type="url"
+      placeholder="https://example.com/chordwiki_personal/"
+      spellcheck="false"
+      autocomplete="off"
+    />
+    <div class="hint">空で保存すると設定をクリアできます。保存先は <code>chrome.storage.sync</code> です。</div>
+
+    <button id="saveButton" type="button">保存</button>
+    <div id="status" aria-live="polite"></div>
+  </main>
+
+  <script src="options.js"></script>
+</body>
+</html>
