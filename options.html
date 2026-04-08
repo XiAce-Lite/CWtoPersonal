@@ -43,6 +43,20 @@
       border-radius: 8px;
       font-size: 14px;
     }
+    .checkboxRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .checkboxRow label {
+      margin: 0;
+    }
+    .checkboxRow input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
     button {
       margin-top: 16px;
       background: #2563eb;
@@ -89,6 +103,12 @@
       autocomplete="off"
     />
     <div class="hint">空で保存すると設定をクリアできます。保存先は <code>chrome.storage.sync</code> です。</div>
+
+    <div class="checkboxRow">
+      <input id="closeOriginalTab" type="checkbox" />
+      <label for="closeOriginalTab">personal を開いた後に元の ChordWiki タブを閉じる</label>
+    </div>
+    <div class="hint">ON の場合のみ、コピー完了後に元の ChordWiki タブを閉じます。</div>
 
     <button id="saveButton" type="button">保存</button>
     <div id="status" aria-live="polite"></div>

@@ -302,6 +302,36 @@
     });
   }
 
+  function getCloseOriginalTabSetting() {
+    return new Promise((resolve) => {
+      chrome.storage.sync.get({ closeOriginalTab: true }, (items) => {
+        if (chrome.runtime.lastError) {
+          console.warn('[cw2p] Failed to read closeOriginalTab:', chrome.runtime.lastError.message);
+          resolve(true);
+          return;
+        }
+
+        resolve(items.closeOriginalTab !== false);
+      });
+    });
+  }
+
+  function closeCurrentTab() {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ type: 'CLOSE_SENDER_TAB' }, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+          return;
+        }
+        if (!response?.ok) {
+          reject(new Error(response?.error || '元のタブを閉じられませんでした。'));
+          return;
+        }
+        resolve(response);
+      });
+    });
+  }
+
   async function handlePendingFlow() {
     if (sessionStorage.getItem(PENDING_KEY) !== '1') {
       return;
@@ -325,8 +355,19 @@
       await copyTextToClipboard(text);
       toast('ChordPro本文をクリップボードへコピーしました。', 'success');
 
-      const opened = await openPersonalTopTab();
-      toast(`chordwiki_personal を開きました: ${opened.url}`, 'success', 3200);
+      const shouldCloseOriginalTab = await getCloseOriginalTabSetting();
+      await openPersonalTopTab();
+
+      if (shouldCloseOriginalTab) {
+        toast('chordwiki_personal を開きました。元のタブを閉じます…', 'success', 1200);
+        window.setTimeout(() => {
+          void closeCurrentTab().catch(() => {
+            // Closing may fail if the tab is already gone; no further UI is needed here.
+          });
+        }, 500);
+      } else {
+        toast('chordwiki_personal を開きました。元のタブは開いたままです。', 'success', 2200);
+      }
     } catch (error) {
       toast(error?.message || '処理中にエラーが発生しました。', 'error', 3500);
     } finally {
