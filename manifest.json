@@ -10,7 +10,10 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://ja.chordwiki.org/*"],
+      "matches": [
+        "https://ja.chordwiki.org/wiki/*",
+        "https://ja.chordwiki.org/wiki.cgi?c=view&*"
+      ],
       "js": ["content_chordwiki.js"],
       "run_at": "document_idle"
     }
