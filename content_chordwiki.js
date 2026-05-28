@@ -2,6 +2,8 @@
   const PENDING_KEY = "cw2p_pending";
   const BUTTON_ID = "cw2p-floating-button";
   const TOAST_ROOT_ID = "cw2p-toast-root";
+  const SETTINGS_DEFAULTS = { extensionEnabled: true };
+  let extensionEnabled = true;
 
   function ensureToastRoot() {
     let root = document.getElementById(TOAST_ROOT_ID);
@@ -136,7 +138,7 @@
   }
 
   function injectFloatingButton() {
-    if (document.getElementById(BUTTON_ID) || isEditPage()) {
+    if (!extensionEnabled || document.getElementById(BUTTON_ID) || isEditPage()) {
       return;
     }
 
@@ -174,6 +176,10 @@
     });
 
     button.addEventListener('click', () => {
+      if (!extensionEnabled) {
+        toast('機能がOFFのため実行できません。', 'error');
+        return;
+      }
       const targetLink = findEditLink();
       const href = targetLink?.href;
       if (!href) {
@@ -333,6 +339,11 @@
   }
 
   async function handlePendingFlow() {
+    if (!extensionEnabled) {
+      sessionStorage.removeItem(PENDING_KEY);
+      return;
+    }
+
     if (sessionStorage.getItem(PENDING_KEY) !== '1') {
       return;
     }
@@ -375,13 +386,54 @@
     }
   }
 
+  function getExtensionEnabledSetting() {
+    return new Promise((resolve) => {
+      chrome.storage.sync.get(SETTINGS_DEFAULTS, (items) => {
+        if (chrome.runtime.lastError) {
+          console.warn('[cw2p] Failed to read extensionEnabled:', chrome.runtime.lastError.message);
+          resolve(true);
+          return;
+        }
+        resolve(items.extensionEnabled !== false);
+      });
+    });
+  }
+
+  function removeFloatingButton() {
+    const button = document.getElementById(BUTTON_ID);
+    if (button) {
+      button.remove();
+    }
+  }
+
+  function applyEnabledState(nextEnabled) {
+    extensionEnabled = nextEnabled;
+    if (!extensionEnabled) {
+      sessionStorage.removeItem(PENDING_KEY);
+      removeFloatingButton();
+      return;
+    }
+    injectFloatingButton();
+  }
+
+  async function boot() {
+    const enabled = await getExtensionEnabledSetting();
+    applyEnabledState(enabled);
+    await handlePendingFlow();
+  }
+
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== 'sync' || !changes.extensionEnabled) {
+      return;
+    }
+    applyEnabledState(changes.extensionEnabled.newValue !== false);
+  });
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      injectFloatingButton();
-      void handlePendingFlow();
+      void boot();
     }, { once: true });
   } else {
-    injectFloatingButton();
-    void handlePendingFlow();
+    void boot();
   }
 })();

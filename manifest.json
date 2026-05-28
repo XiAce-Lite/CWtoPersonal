@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CW to Personal",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Copy ChordPro from ChordWiki only when the user clicks, then open the configured chordwiki_personal top page.",
   "permissions": ["storage", "tabs", "activeTab", "clipboardWrite"],
   "host_permissions": ["https://ja.chordwiki.org/*"],
@@ -12,7 +12,9 @@
     {
       "matches": [
         "https://ja.chordwiki.org/wiki/*",
-        "https://ja.chordwiki.org/wiki.cgi?c=view&*"
+        "https://ja.chordwiki.org/wiki.cgi?c=view&*",
+        "https://ja.chordwiki.org/wiki.cgi?c=edit&*",
+        "https://ja.chordwiki.org/wiki.cgi?*"
       ],
       "js": ["content_chordwiki.js"],
       "run_at": "document_idle"
@@ -20,6 +22,7 @@
   ],
   "options_page": "options.html",
   "action": {
-    "default_title": "CW → Personal"
+    "default_title": "CW → Personal",
+    "default_popup": "popup.html"
   }
 }

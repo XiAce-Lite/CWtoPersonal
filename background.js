@@ -1,6 +1,7 @@
 const DEFAULTS = {
   personalTopUrl: "",
-  closeOriginalTab: true
+  closeOriginalTab: true,
+  extensionEnabled: true
 };
 
 chrome.runtime.onInstalled.addListener(() => {
